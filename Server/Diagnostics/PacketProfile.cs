@@ -69,6 +69,17 @@ namespace Server.Diagnostics
 		}
 
 		private long _created;
+		
+		//Smooth Move START
+		public long Created {
+			get {
+				return _created;
+			}
+			set {
+				_created = value;
+			}
+		}
+		//Smooth Move END		
 
 		public void Increment()
 		{

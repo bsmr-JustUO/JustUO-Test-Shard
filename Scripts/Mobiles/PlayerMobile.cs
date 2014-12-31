@@ -1,3 +1,9 @@
+#region Header
+// **********
+// ServUO - PlayerMobile.cs
+// **********
+#endregion
+
 #region References
 using System;
 using System.Collections;
@@ -1226,6 +1232,10 @@ namespace Server.Mobiles
 			if (e.Mobile is PlayerMobile)
 			{
 				((PlayerMobile)e.Mobile).AutoStablePets();
+				#region SmoothMulti
+				if (((PlayerMobile)e.Mobile).Transport != null )
+					((PlayerMobile)e.Mobile).Transport.LeaveCommand((PlayerMobile)e.Mobile);
+				#endregion				
 			}
 
 			#region Scroll of Alacrity
@@ -2636,6 +2646,11 @@ namespace Server.Mobiles
 			}
 
 			RecoverAmmo();
+			
+			#region SmoothMove#						
+			if (Transport != null )
+				Transport.LeaveCommand(this);	
+			#endregion			
 
 			return base.OnBeforeDeath();
 		}

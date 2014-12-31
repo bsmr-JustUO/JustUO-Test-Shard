@@ -1353,6 +1353,76 @@ namespace Server.Network
 
 			m_Stream.Write((short)0x00); // ??
 		}
+		
+       public WorldItemHS(Item item, PacketWriter stream)
+            : base(0xF3, 26, stream)
+        {
+            stream.Write((short)0x1);
+
+            int itemID = item.ItemID;
+
+            if (item is BaseMulti)
+            {
+                stream.Write((byte)0x02);
+                stream.Write((int)item.Serial);
+                itemID &= 0x3FFF;
+                stream.Write((ushort)itemID);
+                stream.Write((byte)0);
+            }
+            else
+            {
+                stream.Write((byte)0x00);
+                stream.Write((int)item.Serial);
+                itemID &= 0xFFFF;
+                stream.Write((ushort)itemID);
+                stream.Write((byte)0);
+            }
+
+            int amount = item.Amount;
+            stream.Write((short)amount);
+            stream.Write((short)amount);
+
+            Point3D loc = item.Location;
+            int x = loc.m_X & 0x7FFF;
+            int y = loc.m_Y & 0x3FFF;
+            stream.Write((short)x);
+            stream.Write((short)y);
+            stream.Write((sbyte)loc.m_Z);
+
+            stream.Write((byte)item.Light);
+            stream.Write((short)item.Hue);
+            stream.Write((byte)item.GetPacketFlags());
+
+            stream.Write((short)0x00); // ??
+        }
+
+        public WorldItemHS(Mobile mob, PacketWriter stream)
+            : base(0xF3, 26, stream)
+        {
+            stream.Write((short)0x1);
+
+            stream.Write((byte)0x01);
+            stream.Write((int)mob.Serial);
+            stream.Write((ushort)mob.BodyValue);
+            stream.Write((byte)0);
+
+            int amount = 1;
+            stream.Write((short)amount);
+            stream.Write((short)amount);
+
+            Point3D loc = mob.Location;
+            int x = loc.m_X & 0x7FFF;
+            int y = loc.m_Y & 0x3FFF;
+            stream.Write((short)x);
+            stream.Write((short)y);
+            stream.Write((sbyte)loc.m_Z);
+
+            stream.Write((byte)mob.LightLevel);
+            stream.Write((short)mob.Hue);
+            stream.Write((byte)mob.GetPacketFlags());
+
+            stream.Write((short)0x00); // ??
+        }
 	}
 
 	public sealed class LiftRej : Packet
@@ -4935,6 +5005,22 @@ m_Stream.Write( (int) renderMode );
 				prof.Increment();
 			}
 		}
+		
+        protected Packet(int packetID, int length, PacketWriter stream)
+        {
+            m_PacketID = packetID;
+            m_Length = length;
+
+            m_Stream = stream;
+            m_Stream.Write((byte)packetID);
+
+            PacketSendProfile prof = PacketSendProfile.Acquire(GetType());
+
+            if (prof != null)
+            {
+                prof.Created++;
+            }
+        }
 
 		public PacketWriter UnderlyingStream { get { return m_Stream; } }
 
@@ -5199,4 +5285,56 @@ m_Stream.Write( (int) renderMode );
 			m_Stream = null;
 		}
 	}
+	
+	//Smooth Move START
+    public sealed class SmoothMovement : Packet
+    {
+        public SmoothMovement(BaseSmoothMulti multi, DynamicComponentList objectsToMove)
+            : base(0xF6)
+        {
+            EnsureCapacity(18 + objectsToMove.Count * 10);
+
+            m_Stream.Write((int)multi.Serial);
+            m_Stream.Write((byte)multi.CurrentSpeed);
+            m_Stream.Write((byte)multi.Moving);
+            m_Stream.Write((byte)multi.Facing);
+
+            m_Stream.Write((short)multi.X);
+            m_Stream.Write((short)multi.Y);
+            m_Stream.Write((short)multi.Z);
+
+            m_Stream.Write((short)(objectsToMove.Count));
+            objectsToMove.ForEachObject(onBoard =>
+            {
+                m_Stream.Write((int)onBoard.Serial);
+                m_Stream.Write((short)onBoard.X);
+                m_Stream.Write((short)onBoard.Y);
+                m_Stream.Write((short)onBoard.Z);
+            },
+            onBoard =>
+            {
+                m_Stream.Write((int)onBoard.Serial);
+                m_Stream.Write((short)onBoard.X);
+                m_Stream.Write((short)onBoard.Y);
+                m_Stream.Write((short)onBoard.Z);
+            }
+            );
+        }
+    }
+
+    public sealed class ContainerMultiList : Packet
+    {
+        public ContainerMultiList(BaseSmoothMulti multi, DynamicComponentList objectsOnBoard)
+            : base(0xF7)
+        {
+            EnsureCapacity(5 + objectsOnBoard.Count * 26);
+
+            m_Stream.Write((short)objectsOnBoard.Count);
+            new WorldItemHS(multi, m_Stream);   // aggiungo pacchetto F3 per il multi
+            objectsOnBoard.ForEachObject(
+                item => new WorldItemHS(item, m_Stream), 
+                mob => new WorldItemHS(mob, m_Stream));
+        }
+    }
+	//Smooth Move END	
 }

@@ -1735,7 +1735,14 @@ namespace Server
 		/// <summary>
 		///     Moves the Item to a given <paramref name="location" /> and <paramref name="map" />.
 		/// </summary>
+		//Smooth Move START
 		public void MoveToWorld(Point3D location, Map map)
+        {
+            MoveToWorld(location, map, true);
+        }		
+		
+		public void MoveToWorld(Point3D location, Map map, bool checkMultis)
+		//Smooth Move END
 		{
 			if (Deleted)
 			{
@@ -2203,7 +2210,7 @@ namespace Server
 			}
 		}
 
-		public Packet WorldPacketHS
+		public virtual Packet WorldPacketHS
 		{
 			get
 			{
@@ -2231,7 +2238,7 @@ namespace Server
 			}
 		}
 
-		public void ReleaseWorldPackets()
+		public virtual void ReleaseWorldPackets()
 		{
 			Packet.Release(ref m_WorldPacket);
 			Packet.Release(ref m_WorldPacketSA);
@@ -2433,7 +2440,11 @@ namespace Server
 
 		public virtual void Serialize(GenericWriter writer)
 		{
-			writer.Write(9); // version
+			//Smooth Move START
+			writer.Write(10); // version
+
+			writer.Write((Item)m_Transport);
+			//Smooth Move END
 
 			var flags = SaveFlag.None;
 
@@ -2890,6 +2901,13 @@ namespace Server
 
 			switch (version)
 			{
+				//Smooth Move START
+                case 10:
+                    {
+                        m_Transport = reader.ReadItem() as BaseSmoothMulti;
+                        goto case 9;
+                    }
+				//Smooth Move END			
 				case 9:
 				case 8:
 				case 7:
@@ -5741,5 +5759,86 @@ namespace Server
 
 		public virtual void OnSectorDeactivate()
 		{ }
+
+		#region SmoothMulti
+		public virtual void SetLocationOnSmooth(Point3D newLocation)
+		{
+			Point3D oldLocation = m_Location;
+
+			if (oldLocation != newLocation)
+			{
+				if (m_Map != null)
+				{
+					if (m_Parent == null)
+					{
+						if (m_Location.m_X != 0)
+						{
+							Packet removeThis = null;
+
+							IPooledEnumerable eable = m_Map.GetClientsInRange(oldLocation, GetMaxUpdateRange());
+
+							foreach (NetState state in eable)
+							{
+								Mobile m = state.Mobile;
+
+								if (!m.InRange(newLocation, GetMaxUpdateRange()))
+								{
+									if (removeThis == null)
+										removeThis = this.RemovePacket;
+
+									state.Send(removeThis);
+								}
+							}
+							eable.Free();
+						}
+
+						m_Location = newLocation;
+						ReleaseWorldPackets();
+						SetLastMoved();
+						RemDelta(ItemDelta.Update);
+						m_Map.OnMove(oldLocation, this);
+					}
+				}
+				else
+				{
+					m_Location = newLocation;
+					ReleaseWorldPackets();
+				}
+			}
+		}
+
+		public virtual void SetItemIDOnSmooth(int itemID)
+		{
+			if (m_ItemID != itemID)
+			{
+				int oldPileWeight = this.PileWeight;
+
+				m_ItemID = itemID;
+				ReleaseWorldPackets();
+
+				int newPileWeight = this.PileWeight;
+
+				UpdateTotal(this, TotalType.Weight, newPileWeight - oldPileWeight);
+
+				InvalidateProperties();
+			}
+		}
+
+		private BaseSmoothMulti m_Transport;
+
+		[CommandProperty(AccessLevel.GameMaster, true)]
+		public virtual BaseSmoothMulti Transport
+		{
+			get { return m_Transport; }
+			set
+			{
+				if (m_Transport != value)
+					m_Transport = value;
+			}
+		}
+
+		[CommandProperty(AccessLevel.GameMaster)]
+		public bool IsEmbarked { get { return m_Transport != null; } }
+		#endregion	
 	}
 }

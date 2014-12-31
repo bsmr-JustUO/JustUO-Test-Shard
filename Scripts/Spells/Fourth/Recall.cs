@@ -189,6 +189,20 @@ namespace Server.Spells.Fourth
                     else
                         from.Send(new MessageLocalized(from.Serial, from.Body, MessageType.Regular, 0x3B2, 3, 502357, from.Name, "")); // I can not recall from that object.
                 }
+				#region SmoothMulti
+                else if (o is Key && ((Key)o).KeyValue != 0 && ((Key)o).Link is BaseShip)
+                {
+                    BaseShip ship = ((Key)o).Link as BaseShip;
+
+                    if (!ship.Deleted && ship.CheckKey(((Key)o).KeyValue))
+					{
+                        this.m_Owner.Effect(ship.GetMarkedLocation(), ship.Map, false);
+						ship.Refresh();
+					}
+                    else
+                        from.Send(new MessageLocalized(from.Serial, from.Body, MessageType.Regular, 0x3B2, 3, 502357, from.Name, "")); // I can not recall from that object.
+                }
+				#endregion
                 else if (o is HouseRaffleDeed && ((HouseRaffleDeed)o).ValidLocation())
                 {
                     HouseRaffleDeed deed = (HouseRaffleDeed)o;

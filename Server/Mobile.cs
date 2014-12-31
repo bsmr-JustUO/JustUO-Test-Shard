@@ -5825,6 +5825,14 @@ namespace Server
 
 			switch (version)
 			{
+                case 34:
+                    {
+                        m_Transport = reader.ReadItem() as BaseSmoothMulti;
+                        if (m_Transport != null && m_Transport.Deleted)
+                            m_Transport = null;
+
+                        goto case 33;
+                    }			
 				case 33:
 					{
 						m_SpecialSlayerMechanics = reader.ReadBool();
@@ -6307,7 +6315,9 @@ namespace Server
 
 		public virtual void Serialize(GenericWriter writer)
 		{
-			writer.Write(33); // version
+			writer.Write(34); // version
+
+			writer.Write((Item)m_Transport);
 
 			writer.Write(m_SpecialSlayerMechanics);
 
@@ -9864,12 +9874,12 @@ namespace Server
 
 								bool inOldRange = Utility.InUpdateRange(oldLocation, m.m_Location);
 
-								if (m.m_NetState != null && ((isTeleport && (!m.m_NetState.HighSeas || !m_NoMoveHS)) || !inOldRange) &&
+								if (m != null && m.m_NetState != null && ((isTeleport && (!m.m_NetState.HighSeas || !m_NoMoveHS)) || !inOldRange) &&
 									m.CanSee(this))
 								{
 									m.m_NetState.Send(MobileIncoming.Create(m.m_NetState, m, this));
 
-									if (m.m_NetState.StygianAbyss)
+									if (m != null && m.m_NetState != null && m.m_NetState.StygianAbyss)
 									{
 										if (m_Poison != null)
 										{
@@ -9882,12 +9892,12 @@ namespace Server
 										}
 									}
 
-									if (IsDeadBondedPet)
+									if (m != null && m.m_NetState != null && IsDeadBondedPet)
 									{
 										m.m_NetState.Send(new BondedStatus(0, m_Serial, 1));
 									}
 
-									if (ObjectPropertyList.Enabled)
+									if (m != null && m.m_NetState != null && ObjectPropertyList.Enabled)
 									{
 										m.m_NetState.Send(OPLPacket);
 
@@ -12303,5 +12313,182 @@ namespace Server
 		/// </summary>
 		public virtual void OnSectorDeactivate()
 		{ }
+	
+		#region SmoothMulti
+		private BaseSmoothMulti m_Transport;
+
+		public void SetLocationOnSmooth(Point3D newLocation)
+		{
+			if (m_Deleted)
+				return;
+
+			Point3D oldLocation = m_Location;
+
+			if (oldLocation != newLocation)
+			{
+				m_Location = newLocation;
+				UpdateRegion();
+
+				BankBox box = FindBankNoCreate();
+
+				if (box != null && box.Opened)
+					box.Close();
+
+				if (m_NetState != null)
+					m_NetState.ValidateAllTrades();
+
+				if (m_Map != null)
+					m_Map.OnMove(oldLocation, this);
+
+				OnLocationChange(oldLocation);
+
+				this.Region.OnLocationChanged(this, oldLocation);
+			}
+		}
+
+		public void NotifyLocationChangeOnSmooth(Point3D oldLocation)
+		{
+			Map map = m_Map;
+			Point3D newLocation = Location;
+
+			if (map != null)
+			{
+				// First, send a remove message to everyone who can no longer see us. (inOldRange && !inNewRange)
+				Packet removeThis = null;
+
+				IPooledEnumerable eable = map.GetClientsInRange(oldLocation);
+
+				foreach (NetState ns in eable)
+				{
+					if (ns != m_NetState && !Utility.InUpdateRange(newLocation, ns.Mobile.Location))
+					{
+						if (removeThis == null)
+							removeThis = this.RemovePacket;
+
+						ns.Send(removeThis);
+					}
+				}
+
+				eable.Free();
+
+				NetState ourState = m_NetState;
+
+				// Check to see if we are attached to a client
+				if (ourState != null)
+				{
+					eable = m_Map.GetObjectsInRange(newLocation, Core.GlobalMaxUpdateRange);
+
+					// We are attached to a client, so it's a bit more complex. We need to send new items and people to ourself, and ourself to other clients
+					foreach (object o in eable)
+					{
+						if (o is Item)
+						{
+							Item item = (Item)o;
+
+							int range = item.GetUpdateRange(this);
+							Point3D loc = item.Location;
+
+							if (!Utility.InRange(oldLocation, loc, range) && Utility.InRange(newLocation, loc, range) && CanSee(item))
+								item.SendInfoTo(ourState);
+						}
+						else if (o != this && o is Mobile)
+						{
+							Mobile m = (Mobile)o;
+
+							if (!Utility.InUpdateRange(newLocation, m.m_Location))
+								continue;
+
+							bool inOldRange = Utility.InUpdateRange(oldLocation, m.m_Location);
+
+							if (!inOldRange && m.m_NetState != null && m.CanSee(this))
+							{
+								m.m_NetState.Send(new MobileIncoming(m, this));
+
+								if (m_Poison != null)
+									m.m_NetState.Send(new HealthbarPoison(this));
+
+								if (m_Blessed || m_YellowHealthbar)
+									m.m_NetState.Send(new HealthbarYellow(this));
+
+								if (IsDeadBondedPet)
+									m.m_NetState.Send(new BondedStatus(0, m_Serial, 1));
+
+								if (ObjectPropertyList.Enabled)
+									m.m_NetState.Send(OPLPacket);
+							}
+
+							if (!inOldRange && CanSee(m))
+							{
+								ourState.Send(new MobileIncoming(this, m));
+
+								if (m.Poisoned)
+									ourState.Send(new HealthbarPoison(m));
+
+								if (m.Blessed || m.YellowHealthbar)
+									ourState.Send(new HealthbarYellow(m));
+
+								if (m.IsDeadBondedPet)
+									ourState.Send(new BondedStatus(0, m.m_Serial, 1));
+
+								if (ObjectPropertyList.Enabled)
+									ourState.Send(m.OPLPacket);
+							}
+						}
+					}
+
+					eable.Free();
+				}
+				else
+				{
+					eable = m_Map.GetClientsInRange(newLocation);
+
+					// We're not attached to a client, so simply send an Incoming
+					foreach (NetState ns in eable)
+					{
+						if (!Utility.InUpdateRange(oldLocation, ns.Mobile.Location) && ns.Mobile.CanSee(this))
+						{
+							if (ns.StygianAbyss)
+							{
+								ns.Send(new MobileIncoming(ns.Mobile, this));
+
+								if (m_Poison != null)
+									ns.Send(new HealthbarPoison(this));
+
+								if (m_Blessed || m_YellowHealthbar)
+									ns.Send(new HealthbarYellow(this));
+							}
+							else
+							{
+								ns.Send(new MobileIncomingOld(ns.Mobile, this));
+							}
+
+							if (IsDeadBondedPet)
+								ns.Send(new BondedStatus(0, m_Serial, 1));
+
+							if (ObjectPropertyList.Enabled)
+								ns.Send(OPLPacket);
+						}
+					}
+
+					eable.Free();
+				}
+			}
+		}
+
+		[CommandProperty(AccessLevel.GameMaster, true)]
+		public BaseSmoothMulti Transport
+		{
+			get { return m_Transport; }
+			set 
+			{
+				if (m_Transport != value)
+					m_Transport = value;
+			}
+		}
+
+		[CommandProperty(AccessLevel.GameMaster)]
+		public bool IsEmbarked { get { return m_Transport != null; } }
+
+		#endregion	
 	}
 }
