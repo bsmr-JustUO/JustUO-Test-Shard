@@ -139,6 +139,7 @@ namespace Server.Items
                                 return true;
 
                             from.Location = new Point3D(x, y, z);
+							Transport.Disembark(from);
                             return false;
                         }
                     }
@@ -151,6 +152,7 @@ namespace Server.Items
                             return true;
 
                         from.Location = new Point3D(x, y, z);
+						Transport.Disembark(from);
                         return false;
                     }
                 }
@@ -205,345 +207,54 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (m_Boat != null && !m_Boat.Contains(from))
-            {
-                this.m_Boat.Refresh();
+            if (Transport == null)
+                return;
 
-                if (from == m_Boat.Owner)
+            if (from.InRange(GetWorldLocation(), 8))
+            {
+                if (Transport.IsOnBoard(from))
                 {
-                    from.SendMessage("Welcome aboard, Captain!");
-                    base.OnDoubleClick(from);
-					Open();
-                    from.MoveToWorld(this.Location, this.Map);
-					from.Z += 3;
-                }
-                else if (m_Boat.PlayerAccess != null)
-                {
-                    if (m_Boat.PlayerAccess.ContainsKey((PlayerMobile)from))
-                    {
-                        if (m_Boat.PlayerAccess[(PlayerMobile)from] == 1)
-                        {
-                            from.SendMessage("Welcome aboard, you are now a passenger!");
-                            base.OnDoubleClick(from);
-							Open();
-                            from.MoveToWorld(this.Location, this.Map);
-							from.Z += 3;
-                        }
-                        else if (m_Boat.PlayerAccess[(PlayerMobile)from] == 2)
-                        {
-                            from.SendMessage("Welcome aboard, you are now a crew!");
-                            base.OnDoubleClick(from);
-							Open();
-                            from.MoveToWorld(this.Location, this.Map);
-							from.Z += 3;
-                        }
-                        else if (m_Boat.PlayerAccess[(PlayerMobile)from] == 3)
-                        {
-                            from.SendMessage("Welcome aboard, you are now an officer!");
-                            base.OnDoubleClick(from);
-							Open();
-                            from.MoveToWorld(this.Location, this.Map);
-							from.Z += 3;
-                        }
-                        else if (m_Boat.PlayerAccess[(PlayerMobile)from] == 4)
-                        {
-                            from.SendMessage("Welcome aboard, you are now a captain!");
-                            base.OnDoubleClick(from);
-							Open();
-                            from.MoveToWorld(this.Location, this.Map);
-							from.Z += 3;
-                        }
-                        else
-                        {
-                            from.SendMessage("You don't have access to the ship");
-                            base.OnDoubleClick(from);
-                        }
-                    }
-                    else if ((m_Boat.Owner != null) && (from.Guild == m_Boat.Owner.Guild) && (from.Guild != null))
-                    {
-                        if (m_Boat.Guild == 1)
-                        {
-                            from.SendMessage("Welcome aboard, you are now a passenger!");
-                            base.OnDoubleClick(from);
-							Open();
-                            from.MoveToWorld(this.Location, this.Map);
-							from.Z += 3;
-                        }
-                        else if (m_Boat.Guild == 2)
-                        {
-                            from.SendMessage("Welcome aboard, you are now a crew!");
-                            base.OnDoubleClick(from);
-							Open();
-                            from.MoveToWorld(this.Location, this.Map);
-							from.Z += 3;
-                        }
-                        else if (m_Boat.Guild == 3)
-                        {
-                            from.SendMessage("Welcome aboard, you are now an officer!");
-                            base.OnDoubleClick(from);
-							Open();
-                            from.MoveToWorld(this.Location, this.Map);
-							from.Z += 3;
-                        }
-                        else if (m_Boat.Guild == 4)
-                        {
-                            from.SendMessage("Welcome aboard, you are now a captain!");
-                            base.OnDoubleClick(from);
-							Open();
-                            from.MoveToWorld(this.Location, this.Map);
-							from.Z += 3;
-                        }
-                        else
-                        {
-                            from.SendMessage("You don't have access to the ship");
-                            base.OnDoubleClick(from);
-                        }
-                    }
-                    else if ((m_Boat.Owner != null) && (from.Party == m_Boat.Owner.Party) && (from.Party != null))
-                    {
-                        if (m_Boat.Party == 1)
-                        {
-                            from.SendMessage("Welcome aboard, you are now a passenger!");
-                            base.OnDoubleClick(from);
-							Open();
-                            from.MoveToWorld(this.Location, this.Map);
-							from.Z += 3;
-                        }
-                        else if (m_Boat.Party == 2)
-                        {
-                            from.SendMessage("Welcome aboard, you are now a crew!");
-                            base.OnDoubleClick(from);
-							Open();
-                            from.MoveToWorld(this.Location, this.Map);
-							from.Z += 3;
-                        }
-                        else if (m_Boat.Party == 3)
-                        {
-                            from.SendMessage("Welcome aboard, you are now an officer!");
-                            base.OnDoubleClick(from);
-							Open();
-                            from.MoveToWorld(this.Location, this.Map);
-							from.Z += 3;
-                        }
-                        else if (m_Boat.Party == 4)
-                        {
-                            from.SendMessage("Welcome aboard, you are now a captain!");
-                            base.OnDoubleClick(from);
-							Open();
-                            from.MoveToWorld(this.Location, this.Map);
-							from.Z += 3;
-                        }
-                        else
-                        {
-                            from.SendMessage("You don't have access to the ship");
-                            base.OnDoubleClick(from);
-                        }
-                    }
-                    else if (m_Boat.Public == 1)
-                    {
-                        from.SendMessage("Welcome aboard, you are now a passenger!");
-                        base.OnDoubleClick(from);
-						Open();
-                        from.MoveToWorld(this.Location, this.Map);
-						from.Z += 3;
-                    }
-                    else if (m_Boat.Public == 2)
-                    {
-                        from.SendMessage("Welcome aboard, you are now a crew!");
-                        base.OnDoubleClick(from);
-						Open();
-                        from.MoveToWorld(this.Location, this.Map);
-						from.Z += 3;
-                    }
-                    else if (m_Boat.Public == 3)
-                    {
-                        from.SendMessage("Welcome aboard, you are now an officer!");
-                        base.OnDoubleClick(from);
-						Open();
-                        from.MoveToWorld(this.Location, this.Map);
-						from.Z += 3;
-                    }
-                    else if (m_Boat.Public == 4)
-                    {
-                        from.SendMessage("Welcome aboard, you are now a captain!");
-                        base.OnDoubleClick(from);
-						Open();
-                        from.MoveToWorld(this.Location, this.Map);
-						from.Z += 3;
-                    }
+                    if (IsOpen)
+                        Close();
                     else
-                    {
-                        from.SendMessage("You don't have access to the ship");
-                        base.OnDoubleClick(from);
-                    }
-                }
-                else if ((m_Boat.Owner != null) && (from.Guild == m_Boat.Owner.Guild) && (from.Guild != null))
-                {
-                    if (m_Boat.Guild == 1)
-                    {
-                        from.SendMessage("Welcome aboard, you are now a passenger!");
-                        base.OnDoubleClick(from);
-						Open();
-                        from.MoveToWorld(this.Location, this.Map);
-						from.Z += 3;
-                    }
-                    else if (m_Boat.Guild == 2)
-                    {
-                        from.SendMessage("Welcome aboard, you are now a crew!");
-                        base.OnDoubleClick(from);
-						Open();
-                        from.MoveToWorld(this.Location, this.Map);
-						from.Z += 3;
-                    }
-                    else if (m_Boat.Guild == 3)
-                    {
-                        from.SendMessage("Welcome aboard, you are now an officer!");
-                        base.OnDoubleClick(from);
-						Open();
-                        from.MoveToWorld(this.Location, this.Map);
-						from.Z += 3;
-                    }
-                    else if (m_Boat.Guild == 4)
-                    {
-                        from.SendMessage("Welcome aboard, you are now a captain!");
-                        base.OnDoubleClick(from);
-						Open();
-                        from.MoveToWorld(this.Location, this.Map);
-						from.Z += 3;
-                    }
-                    else
-                    {
-                        from.SendMessage("You don't have access to the ship");
-                        base.OnDoubleClick(from);
-                    }
-                }
-                else if ((m_Boat.Owner != null) && (from.Party == m_Boat.Owner.Party) && (from.Party != null))
-                {
-                    if (m_Boat.Party == 1)
-                    {
-                        from.SendMessage("Welcome aboard, you are now a passenger!");
-                        base.OnDoubleClick(from);
-						Open();
-                        from.MoveToWorld(this.Location, this.Map);
-						from.Z += 3;
-                    }
-                    else if (m_Boat.Party == 2)
-                    {
-                        from.SendMessage("Welcome aboard, you are now a crew!");
-                        base.OnDoubleClick(from);
-						Open();
-                        from.MoveToWorld(this.Location, this.Map);
-						from.Z += 3;
-                    }
-                    else if (m_Boat.Party == 3)
-                    {
-                        from.SendMessage("Welcome aboard, you are now an officer!");
-                        base.OnDoubleClick(from);
-						Open();
-                        from.MoveToWorld(this.Location, this.Map);
-						from.Z += 3;
-                    }
-                    else if (m_Boat.Party == 4)
-                    {
-                        from.SendMessage("Welcome aboard, you are now a captain!");
-                        base.OnDoubleClick(from);
-						Open();
-                        from.MoveToWorld(this.Location, this.Map);
-						from.Z += 3;
-                    }
-                    else
-                    {
-                        from.SendMessage("You don't have access to the ship");
-                        base.OnDoubleClick(from);
-                    }
-                }
-                else if (m_Boat.Public == 1)
-                {
-                    from.SendMessage("Welcome aboard, you are now a passenger!");
-                    base.OnDoubleClick(from);
-					Open();
-                    from.MoveToWorld(this.Location, this.Map);
-					from.Z += 3;
-                }
-                else if (m_Boat.Public == 2)
-                {
-                    from.SendMessage("Welcome aboard, you are now a crew!");
-                    base.OnDoubleClick(from);
-					Open();
-                    from.MoveToWorld(this.Location, this.Map);
-					from.Z += 3;
-                }
-                else if (m_Boat.Public == 3)
-                {
-                    from.SendMessage("Welcome aboard, you are now an officer!");
-                    base.OnDoubleClick(from);
-					Open();
-                    from.MoveToWorld(this.Location, this.Map);
-					from.Z += 3;
-                }
-                else if (m_Boat.Public == 4)
-                {
-                    from.SendMessage("Welcome aboard, you are now a captain!");
-                    base.OnDoubleClick(from);
-					Open();
-                    from.MoveToWorld(this.Location, this.Map);
-					from.Z += 3;
+                        Open();
                 }
                 else
                 {
-                    from.SendMessage("You don't have access to the ship");
-                    base.OnDoubleClick(from);
-                }
-            }
-            else if (m_Boat != null && m_Boat.Contains(from))
-            {
-                Map map = Map;
-
-                if (map == null)
-                    return;
-					
-				Open();
-
-                int rx = 0, ry = 0;
-
-                if (ItemID == 0x3ED4)
-                    rx = 1;
-                else if (ItemID == 0x3ED5)
-                    rx = -1;
-                else if (ItemID == 0x3E84)
-                    ry = 1;
-                else if (ItemID == 0x3E89)
-                    ry = -1;
-
-                for (int i = 1; i <= 6; ++i)
-                {
-                    int x = X + (i * rx);
-                    int y = Y + (i * ry);
-                    int z;
-
-                    for (int j = -16; j <= 16; ++j)
+                    if (!IsOpen)
                     {
-                        z = from.Z + j;
-
-                        if (map.CanFit(x, y, z, 16, false, false) && !Server.Spells.SpellHelper.CheckMulti(new Point3D(x, y, z), map) && !Region.Find(new Point3D(x, y, z), map).IsPartOf(typeof(Factions.StrongholdRegion)))
+                        if (!Locked)
+                            Open();
+                        else if (from.AccessLevel >= AccessLevel.GameMaster)
                         {
-                            if (i == 1 && j >= -2 && j <= 2)
-                                return;
-
-                            from.Location = new Point3D(x, y, z);
-                            return;
+                            from.LocalOverheadMessage(Network.MessageType.Regular, 0x00, 502502); // That is locked but your godly powers allow access
+                            Open();
                         }
+                        else
+                            from.LocalOverheadMessage(Network.MessageType.Regular, 0x00, 502503); // That is locked.
                     }
-
-                    z = map.GetAverageZ(x, y);
-
-                    if (map.CanFit(x, y, z, 16, false, false) && !Server.Spells.SpellHelper.CheckMulti(new Point3D(x, y, z), map) && !Region.Find(new Point3D(x, y, z), map).IsPartOf(typeof(Factions.StrongholdRegion)))
+                    else if (!Locked)
                     {
-                        if (i == 1)
-                            return;
-
-                        from.Location = new Point3D(x, y, z);
-                        return;
+                        from.Location = new Point3D(this.X, this.Y, this.Z + 3);
+						
+						Transport.Embark(from);
+						
+						if ( m_Boat != null )
+							m_Boat.Refresh();
+                    }
+                    else if (from.AccessLevel >= AccessLevel.GameMaster)
+                    {
+                        from.LocalOverheadMessage(Network.MessageType.Regular, 0x00, 502502); // That is locked but your godly powers allow access
+                        from.Location = new Point3D(this.X, this.Y, this.Z + 3);
+						
+						Transport.Embark(from);
+						
+						if ( m_Boat != null )
+							m_Boat.Refresh();
+                    }
+                    else
+                    {
+                        from.LocalOverheadMessage(Network.MessageType.Regular, 0x00, 502503); // That is locked.
                     }
                 }
             }

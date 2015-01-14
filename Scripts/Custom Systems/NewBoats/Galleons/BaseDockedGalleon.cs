@@ -11,6 +11,8 @@ namespace Server.Multis
 		private int m_MultiID;
 		private Point3D m_Offset;
 		private string m_ShipName;
+		private Direction m_ChosenDirection;
+		private bool m_IsGoodMultiID;		
 
 		[CommandProperty( AccessLevel.GameMaster )]
 		public int MultiID{ get{ return m_MultiID; } set{ m_MultiID = value; } }
@@ -20,6 +22,9 @@ namespace Server.Multis
 
 		[CommandProperty( AccessLevel.GameMaster )]
 		public string ShipName{ get{ return m_ShipName; } set{ m_ShipName = value; InvalidateProperties(); } }
+		
+		[CommandProperty( AccessLevel.GameMaster )]
+		public abstract BaseGalleon Galleon{ get; }		
 
 		public BaseDockedGalleon( int id, Point3D offset, BaseGalleon galleon ) : base( 0x14F4 )
 		{
@@ -30,6 +35,9 @@ namespace Server.Multis
 			m_Offset = offset;
 
 			m_ShipName = galleon.ShipName;
+			
+			m_IsGoodMultiID = false;
+			m_ChosenDirection = Direction.North;			
 		}
 
 		public BaseDockedGalleon( Serial serial ) : base( serial )
@@ -78,6 +86,49 @@ namespace Server.Multis
 
 		public override void OnDoubleClick( Mobile from )
 		{
+			from.SendGump( new GalleonPlacementGump( from, null, this ) );
+		}		
+		
+		public void PlacementDirection( Mobile from, Direction chosenDirection)
+		{
+			m_ChosenDirection = chosenDirection;
+		
+			if ( m_IsGoodMultiID == false )
+			{	
+				switch ( chosenDirection )
+				{		
+
+						case Direction.West:
+						{
+							m_MultiID += 3;	
+							m_IsGoodMultiID = true;
+
+							break;
+						}	
+
+						case Direction.South:
+						{
+							m_MultiID += 2;	
+							m_IsGoodMultiID = true;
+
+							break;					
+						}
+
+						case Direction.East:
+						{
+							m_MultiID += 1;
+							m_IsGoodMultiID = true;
+							
+							break;
+						}							
+				}
+			}
+			
+			ShipPlacement(from);
+		}
+		
+		public void ShipPlacement( Mobile from )
+		{
 			if ( !IsChildOf( from.Backpack ) )
 			{
 				from.SendLocalizedMessage( 1042001 ); // That must be in your pack for you to use it.
@@ -89,8 +140,6 @@ namespace Server.Multis
 				from.Target = new InternalTarget( this );
 			}
 		}
-
-		public abstract BaseGalleon Galleon{ get; }
 
 		public override void AddNameProperty( ObjectPropertyList list )
 		{
@@ -137,7 +186,7 @@ namespace Server.Multis
 					Delete();
 
 					galleon.Owner = from;
-					galleon.Anchored = true;
+					galleon.Anchored = false;
 					galleon.ShipName = m_ShipName;
 
 					uint keyValue = galleon.CreateKeys( from );
@@ -146,6 +195,8 @@ namespace Server.Multis
 						galleon.Ropes[i].KeyValue = keyValue;
 
 					galleon.MoveToWorld( p, map );
+					
+					galleon.SetFacing(m_ChosenDirection);						
 				}
 				else
 				{

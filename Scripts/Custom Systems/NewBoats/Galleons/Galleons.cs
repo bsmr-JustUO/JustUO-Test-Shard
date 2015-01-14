@@ -590,7 +590,7 @@ namespace Server.Multis
 	{
 		public override BaseGalleon Galleon{ get{ return new GargoyleGalleon(); } }
 
-		public DockedGargoyleGalleon( BaseGalleon boat ) : base( 0x2C, Point3D.Zero, boat )
+		public DockedGargoyleGalleon( BaseGalleon boat ) : base( 0x24, Point3D.Zero, boat )
 		{
 		}
 
@@ -920,7 +920,7 @@ namespace Server.Multis
 	{
 		public override BaseGalleon Galleon{ get{ return new OrcGalleon(); } }
 
-		public DockedOrcGalleon( BaseGalleon boat ) : base( 0x20, Point3D.Zero, boat )
+		public DockedOrcGalleon( BaseGalleon boat ) : base( 0x18, Point3D.Zero, boat )
 		{
 		}
 
@@ -1309,7 +1309,7 @@ namespace Server.Multis
 	{
 		public override BaseGalleon Galleon{ get{ return new BritainGalleon(); } }
 
-		public DockedBritainGalleon( BaseGalleon boat ) : base( 0x44, Point3D.Zero, boat )
+		public DockedBritainGalleon( BaseGalleon boat ) : base( 0x40, Point3D.Zero, boat )
 		{
 		}
 

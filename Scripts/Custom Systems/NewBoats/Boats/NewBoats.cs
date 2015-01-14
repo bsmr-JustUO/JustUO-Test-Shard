@@ -7,6 +7,9 @@ namespace Server.Multis
     {		
         protected override int NorthID { get { return 0x0; } }
 
+		[CommandProperty( AccessLevel.GameMaster )]
+		public override BaseDockedNewBoat DockedNewBoat { get { return new DockedNewSmallBoat(this); } }		
+		
         [Constructable]
         public NewSmallBoat()
             : base(0x0, 100, new Point3D(1, 4, 0), new Point3D(-2, 0, 0), new Point3D(2, 0, 0), new Point3D(0, -4, 0))
@@ -67,11 +70,41 @@ namespace Server.Multis
 			writer.Write( (int)0 );
 		}
 	}
+	
+	public class DockedNewSmallBoat : BaseDockedNewBoat
+	{
+		public override NewBaseBoat Boat{ get{ return new NewSmallBoat(); } }
+
+		public DockedNewSmallBoat( NewBaseBoat boat ) : base( 0x0, Point3D.Zero, boat )
+		{
+		}
+
+		public DockedNewSmallBoat( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int)0 );
+		}
+	}	
 
     public class NewSmallDragonBoat : NewBaseBoat
     {
         protected override int NorthID { get { return 0x4; } }
 
+		[CommandProperty( AccessLevel.GameMaster )]
+		public override BaseDockedNewBoat DockedNewBoat { get { return new DockedNewSmallDragonBoat(this); } }		
+		
         [Constructable]
         public NewSmallDragonBoat()
             : base(0x4, 100, new Point3D(1, 4, 0), new Point3D(-2, 0, 0), new Point3D(2, 0, 0), new Point3D(0, -4, 0))
@@ -134,11 +167,41 @@ namespace Server.Multis
             writer.Write((int)0);
         }
     }
+	
+	public class DockedNewSmallDragonBoat : BaseDockedNewBoat
+	{
+		public override NewBaseBoat Boat{ get{ return new NewSmallDragonBoat(); } }
+
+		public DockedNewSmallDragonBoat( NewBaseBoat boat ) : base( 0x4, Point3D.Zero, boat )
+		{
+		}
+
+		public DockedNewSmallDragonBoat( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int)0 );
+		}
+	}		
 
     public class NewMediumBoat : NewBaseBoat
     {
         protected override int NorthID { get { return 0x8; } }
 
+		[CommandProperty( AccessLevel.GameMaster )]
+		public override BaseDockedNewBoat DockedNewBoat { get { return new DockedNewMediumBoat(this); } }			
+		
         [Constructable]
         public NewMediumBoat()
             : base(0x8, 100, new Point3D(1, 5, 0), new Point3D(-2, 0, 0), new Point3D(2, 0, 0), new Point3D(0, -4, 0))
@@ -201,11 +264,41 @@ namespace Server.Multis
             writer.Write((int)0);
         }
     }
+	
+	public class DockedNewMediumBoat : BaseDockedNewBoat
+	{
+		public override NewBaseBoat Boat{ get{ return new NewMediumBoat(); } }
+
+		public DockedNewMediumBoat( NewBaseBoat boat ) : base( 0x8, Point3D.Zero, boat )
+		{
+		}
+
+		public DockedNewMediumBoat( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int)0 );
+		}
+	}		
 
     public class NewMediumDragonBoat : NewBaseBoat
     {
         protected override int NorthID { get { return 0xC; } }
 
+		[CommandProperty( AccessLevel.GameMaster )]
+		public override BaseDockedNewBoat DockedNewBoat { get { return new DockedNewMediumDragonBoat(this); } }		
+		
         [Constructable]
         public NewMediumDragonBoat()
             : base(0xC, 100, new Point3D(1, 5, 0), new Point3D(-2, 0, 0), new Point3D(2, 0, 0), new Point3D(0, -4, 0))
@@ -268,11 +361,41 @@ namespace Server.Multis
             writer.Write((int)0);
         }
     }
+	
+	public class DockedNewMediumDragonBoat : BaseDockedNewBoat
+	{
+		public override NewBaseBoat Boat{ get{ return new NewMediumDragonBoat(); } }
+
+		public DockedNewMediumDragonBoat( NewBaseBoat boat ) : base( 0xC, Point3D.Zero, boat )
+		{
+		}
+
+		public DockedNewMediumDragonBoat( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int)0 );
+		}
+	}		
 
     public class NewLargeBoat : NewBaseBoat
     {
         protected override int NorthID { get { return 0x10; } }
 
+		[CommandProperty( AccessLevel.GameMaster )]
+		public override BaseDockedNewBoat DockedNewBoat { get { return new DockedNewLargeBoat(this); } }		
+		
         [Constructable]
         public NewLargeBoat()
             : base(0x10, 100, new Point3D(1, 5, 0), new Point3D(-2, -1, 0), new Point3D(2, -1, 0), new Point3D(0, -5, 0))
@@ -335,11 +458,41 @@ namespace Server.Multis
             writer.Write((int)0);
         }
     }
+	
+	public class DockedNewLargeBoat : BaseDockedNewBoat
+	{
+		public override NewBaseBoat Boat{ get{ return new NewLargeBoat(); } }
+
+		public DockedNewLargeBoat( NewBaseBoat boat ) : base( 0x10, Point3D.Zero, boat )
+		{
+		}
+
+		public DockedNewLargeBoat( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int)0 );
+		}
+	}		
 
     public class NewLargeDragonBoat : NewBaseBoat
     {
         protected override int NorthID { get { return 0x14; } }
 
+		[CommandProperty( AccessLevel.GameMaster )]
+		public override BaseDockedNewBoat DockedNewBoat { get { return new DockedNewLargeDragonBoat(this); } }
+		
         [Constructable]
         public NewLargeDragonBoat()
             : base(0x14, 100, new Point3D(1, 5, 0), new Point3D(-2, -1, 0), new Point3D(2, -1, 0), new Point3D(0, -5, 0))
@@ -402,5 +555,31 @@ namespace Server.Multis
             writer.Write((int)0);
         }
     }
+	
+	public class DockedNewLargeDragonBoat : BaseDockedNewBoat
+	{
+		public override NewBaseBoat Boat{ get{ return new NewLargeDragonBoat(); } }
 
+		public DockedNewLargeDragonBoat( NewBaseBoat boat ) : base( 0x14, Point3D.Zero, boat )
+		{
+		}
+
+		public DockedNewLargeDragonBoat( Serial serial ) : base( serial )
+		{
+		}
+
+		public override void Deserialize( GenericReader reader )
+		{
+			base.Deserialize( reader );
+
+			int version = reader.ReadInt();
+		}
+
+		public override void Serialize( GenericWriter writer )
+		{
+			base.Serialize( writer );
+
+			writer.Write( (int)0 );
+		}
+	}
 }

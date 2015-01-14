@@ -936,7 +936,7 @@ namespace Server
 			if (this != Internal)
 			{
 				Sector sector = GetSector(m);
-				#region SmoothMulti
+				#region SmoothMove
 				for (int i = 0; i < sector.Multis.Count; ++i)
 				{
 					BaseMulti multi = sector.Multis[i];
@@ -961,7 +961,7 @@ namespace Server
 
 			Sector sector = GetSector(item);
 			
-            #region SmoothMulti
+            #region SmoothMove
             for (int i = 0; i < sector.Multis.Count; ++i)
             {
                 BaseMulti multi = sector.Multis[i];
@@ -995,7 +995,7 @@ namespace Server
 			{
 				Sector sector = GetSector(m);
 				
-				#region SmoothMulti
+				#region SmoothMove
 				if (m.IsEmbarked)
 					m.Transport.Disembark(m);
 				#endregion
@@ -1013,7 +1013,7 @@ namespace Server
 
 			Sector sector = GetSector(item);
 			
-            #region SmoothMulti
+            #region SmoothMove
             if (item.IsEmbarked)
                 item.Transport.Disembark(item);
             #endregion			
@@ -1076,7 +1076,7 @@ namespace Server
 			return GetSector(Bound(new Point2D(loc.m_X + mcl.Max.m_X, loc.m_Y + mcl.Max.m_Y)));
 		}
 
-		public virtual void OnMove(Point3D oldLocation, Mobile m, bool checkMulti = true)
+		public virtual void OnMove(Point3D oldLocation, Mobile m, bool checkMulti = false) //SmoothMove : checkMulti
 		{
 			if (this == Internal)
 			{
@@ -1088,13 +1088,36 @@ namespace Server
 
 			if (oldSector == newSector)
 			{
+				#region SmoothMove
+				if (checkMulti)
+				{
+					if (m.IsEmbarked)
+					{
+						if (m.Transport.Contains(m))
+							return;
+
+						m.Transport.Disembark(m);
+					}
+
+					for (int i = 0; i < newSector.Multis.Count; ++i)
+					{
+						BaseMulti multi = newSector.Multis[i];
+						if (multi is BaseSmoothMulti && multi.Contains(m))
+						{
+							((BaseSmoothMulti)multi).Embark(m);
+							break;
+						}
+					}
+				}
+				#endregion			
+			
 				return;
 			}
 
 			oldSector.OnLeave(m);
 			newSector.OnEnter(m);
 			
-            #region SmoothMulti
+            #region SmoothMove
             if (checkMulti)
             {
                 if (m.IsEmbarked)
@@ -1118,7 +1141,7 @@ namespace Server
             #endregion				
 		}
 
-		public virtual void OnMove(Point3D oldLocation, Item item, bool checkMulti = true)
+		public virtual void OnMove(Point3D oldLocation, Item item, bool checkMulti = false) //SmoothMove : checkMulti
 		{
 			if (this == Internal)
 			{
@@ -1134,7 +1157,7 @@ namespace Server
 				newSector.OnEnter(item);
 			}
 
-            #region SmoothMulti
+            #region SmoothMove
             if (checkMulti)
             {
                 if (item.IsEmbarked)

@@ -44,114 +44,107 @@ namespace Server.Items
             if (Transport.IsDriven)
             {
                 Transport.LeaveCommand(from);
-                from.SendMessage("You step away from the wheel");
+                from.SendMessage("You are no longer piloting this vessel");
             }
             else
             {
                 if (m_Galleon != null)
                 {
-                    if (from.InRange(this.Location, 2))
-                    {
-                        if (!from.Mounted)
-                        {
-                            if (from == m_Galleon.Owner)
-                            {
-                                from.SendMessage("You take control of the ship");
-                                Transport.TakeCommand(from);
-                            }
-                            else if (m_Galleon.PlayerAccess != null)
-                            {
-                                if (m_Galleon.PlayerAccess.ContainsKey((PlayerMobile)from))
-                                {
-                                    if (m_Galleon.PlayerAccess[(PlayerMobile)from] == 2)
-                                    {
-                                        from.SendMessage("You take control of the ship");
-                                        Transport.TakeCommand(from);
-                                    }
-                                    else if (m_Galleon.PlayerAccess[(PlayerMobile)from] == 3)
-                                    {
-                                        from.SendMessage("You take control of the ship");
-                                        Transport.TakeCommand(from);
-                                    }
-                                    else if (m_Galleon.PlayerAccess[(PlayerMobile)from] == 4)
-                                    {
-                                        from.SendMessage("You take control of the ship");
-                                        Transport.TakeCommand(from);
-                                    }
-                                    else if ((from.Guild != null) && (from.Guild == m_Galleon.Owner.Guild))
-                                    {
-                                        if (m_Galleon.Guild == 2)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Galleon.Guild == 3)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Galleon.Guild == 4)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                    }
-                                    else if ((from.Party != null) && (from.Party == m_Galleon.Owner.Party) )
-                                    {
-                                        if (m_Galleon.Party == 2)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Galleon.Party == 3)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Galleon.Party == 4)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                    }
-                                    else if(m_Galleon.Public != null)
-                                    {
-                                        if (m_Galleon.Public == 2)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Galleon.Public == 3)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Galleon.Public == 4)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    from.SendMessage("You are not allowed to do that");
-                                }
-                            }
-                            else
-                            {
-                                from.SendMessage("You are not allowed to do that");
-                            }
-                        }
-                        else
-                        {
-                            from.SendMessage("You can not control the ship while mounted");
-                        }
-                    }
-                    else
-                    {
-                        from.SendMessage("You are to far away from the wheel");
-                    }
+					if (!from.Mounted)
+					{
+						if (from == m_Galleon.Owner)
+						{
+							from.SendMessage("You are now piloting this vessel");
+							Transport.TakeCommand(from);
+						}
+						else if (m_Galleon.PlayerAccess != null)
+						{
+							if (m_Galleon.PlayerAccess.ContainsKey((PlayerMobile)from))
+							{
+								if (m_Galleon.PlayerAccess[(PlayerMobile)from] == 2)
+								{
+									from.SendMessage("You are now piloting this vessel");
+									Transport.TakeCommand(from);
+								}
+								else if (m_Galleon.PlayerAccess[(PlayerMobile)from] == 3)
+								{
+									from.SendMessage("You are now piloting this vessel");
+									Transport.TakeCommand(from);
+								}
+								else if (m_Galleon.PlayerAccess[(PlayerMobile)from] == 4)
+								{
+									from.SendMessage("You are now piloting this vessel");
+									Transport.TakeCommand(from);
+								}
+								else if ((from.Guild != null) && (from.Guild == m_Galleon.Owner.Guild))
+								{
+									if (m_Galleon.Guild == 2)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+									else if (m_Galleon.Guild == 3)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+									else if (m_Galleon.Guild == 4)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+								}
+								else if ((from.Party != null) && (from.Party == m_Galleon.Owner.Party) )
+								{
+									if (m_Galleon.Party == 2)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+									else if (m_Galleon.Party == 3)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+									else if (m_Galleon.Party == 4)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+								}
+								else if(m_Galleon.Public != null)
+								{
+									if (m_Galleon.Public == 2)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+									else if (m_Galleon.Public == 3)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+									else if (m_Galleon.Public == 4)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+								}
+							}
+							else
+							{
+								from.SendMessage("You are not allowed to do that");
+							}
+						}
+						else
+						{
+							from.SendMessage("You are not allowed to do that");
+						}
+					}
+					else
+					{
+						from.SendMessage("You can not control the ship while mounted");
+					}                   
                 }
             }
         }
@@ -217,114 +210,108 @@ namespace Server.Items
             if (Transport.IsDriven)
             {
                 Transport.LeaveCommand(from);
-                from.SendMessage("You step away from the wheel."); //Added message; Dian
+                from.SendMessage("You are no longer piloting this vessel."); //Added message; Dian
             }
             else
             {
                 if (m_Galleon != null)
                 {
-                    if (from.InRange(this.Location, 2))
-                    {
-                        if (!from.Mounted)
-                        {
-                            if (from == m_Galleon.Owner)
-                            {
-                                from.SendMessage("You take control of the ship");
-                                Transport.TakeCommand(from);
-                            }
-                            else if (m_Galleon.PlayerAccess != null)
-                            {
-                                if (m_Galleon.PlayerAccess.ContainsKey((PlayerMobile)from))
-                                {
-                                    if (m_Galleon.PlayerAccess[(PlayerMobile)from] == 2)
-                                    {
-                                        from.SendMessage("You take control of the ship");
-                                        Transport.TakeCommand(from);
-                                    }
-                                    else if (m_Galleon.PlayerAccess[(PlayerMobile)from] == 3)
-                                    {
-                                        from.SendMessage("You take control of the ship");
-                                        Transport.TakeCommand(from);
-                                    }
-                                    else if (m_Galleon.PlayerAccess[(PlayerMobile)from] == 4)
-                                    {
-                                        from.SendMessage("You take control of the ship");
-                                        Transport.TakeCommand(from);
-                                    }
-                                    else if ((from.Guild == m_Galleon.Owner.Guild) && (from.Guild != null))
-                                    {
-                                        if (m_Galleon.Guild == 2)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Galleon.Guild == 3)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Galleon.Guild == 4)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                    }
-                                    else if ((from.Party == m_Galleon.Owner.Party) && (from.Party != null))
-                                    {
-                                        if (m_Galleon.Party == 2)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Galleon.Party == 3)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Galleon.Party == 4)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (m_Galleon.Public == 2)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Galleon.Public == 3)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Galleon.Public == 4)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    from.SendMessage("You are not allowed to do that");
-                                }
-                            }
-                            else
-                            {
-                                from.SendMessage("You are not allowed to do that");
-                            }
-                        }
-                        else
-                        {
-                            from.SendMessage("You can not control the ship while mounted");
-                        }
-                    }
-                    else
-                    {
-                        from.SendMessage("You are to far away from the wheel");
-                    }
+					if (!from.Mounted)
+					{
+						if (from == m_Galleon.Owner)
+						{
+							from.SendMessage("You are now piloting this vessel");
+							Transport.TakeCommand(from);
+						}
+						else if (m_Galleon.PlayerAccess != null)
+						{
+							if (m_Galleon.PlayerAccess.ContainsKey((PlayerMobile)from))
+							{
+								if (m_Galleon.PlayerAccess[(PlayerMobile)from] == 2)
+								{
+									from.SendMessage("You are now piloting this vessel");
+									Transport.TakeCommand(from);
+								}
+								else if (m_Galleon.PlayerAccess[(PlayerMobile)from] == 3)
+								{
+									from.SendMessage("You are now piloting this vessel");
+									Transport.TakeCommand(from);
+								}
+								else if (m_Galleon.PlayerAccess[(PlayerMobile)from] == 4)
+								{
+									from.SendMessage("You are now piloting this vessel");
+									Transport.TakeCommand(from);
+								}
+								else if ((from.Guild == m_Galleon.Owner.Guild) && (from.Guild != null))
+								{
+									if (m_Galleon.Guild == 2)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+									else if (m_Galleon.Guild == 3)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+									else if (m_Galleon.Guild == 4)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+								}
+								else if ((from.Party == m_Galleon.Owner.Party) && (from.Party != null))
+								{
+									if (m_Galleon.Party == 2)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+									else if (m_Galleon.Party == 3)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+									else if (m_Galleon.Party == 4)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+								}
+								else
+								{
+									if (m_Galleon.Public == 2)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+									else if (m_Galleon.Public == 3)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+									else if (m_Galleon.Public == 4)
+									{
+										from.SendMessage("You are now piloting this vessel");
+										Transport.TakeCommand(from);
+									}
+								}
+							}
+							else
+							{
+								from.SendMessage("You are not allowed to do that");
+							}
+						}
+						else
+						{
+							from.SendMessage("You are not allowed to do that");
+						}
+					}
+					else
+					{
+						from.SendMessage("You can not control the ship while mounted");
+					}
+
                 }
             }
         }
@@ -886,24 +873,28 @@ namespace Server.Items
                             from.SendMessage("Welcome aboard, you are now a passenger!");
                             base.OnDoubleClick(from);
                             from.MoveToWorld(this.Location, this.Map);
+							Transport.Embark(from);
                         }
                         else if (m_Boat.PlayerAccess[(PlayerMobile)from] == 2)
                         {
                             from.SendMessage("Welcome aboard, you are now a crew!");
                             base.OnDoubleClick(from);
                             from.MoveToWorld(this.Location, this.Map);
+							Transport.Embark(from);
                         }
                         else if (m_Boat.PlayerAccess[(PlayerMobile)from] == 3)
                         {
                             from.SendMessage("Welcome aboard, you are now an officer!");
                             base.OnDoubleClick(from);
                             from.MoveToWorld(this.Location, this.Map);
+							Transport.Embark(from);
                         }
                         else if (m_Boat.PlayerAccess[(PlayerMobile)from] == 4)
                         {
                             from.SendMessage("Welcome aboard, you are now a captain!");
                             base.OnDoubleClick(from);
                             from.MoveToWorld(this.Location, this.Map);
+							Transport.Embark(from);
                         }
                         else
                         {
@@ -918,24 +909,28 @@ namespace Server.Items
                             from.SendMessage("Welcome aboard, you are now a passenger!");
                             base.OnDoubleClick(from);
                             from.MoveToWorld(this.Location, this.Map);
+							Transport.Embark(from);
                         }
                         else if (m_Boat.Guild == 2)
                         {
                             from.SendMessage("Welcome aboard, you are now a crew!");
                             base.OnDoubleClick(from);
                             from.MoveToWorld(this.Location, this.Map);
+							Transport.Embark(from);
                         }
                         else if (m_Boat.Guild == 3)
                         {
                             from.SendMessage("Welcome aboard, you are now an officer!");
                             base.OnDoubleClick(from);
                             from.MoveToWorld(this.Location, this.Map);
+							Transport.Embark(from);
                         }
                         else if (m_Boat.Guild == 4)
                         {
                             from.SendMessage("Welcome aboard, you are now a captain!");
                             base.OnDoubleClick(from);
                             from.MoveToWorld(this.Location, this.Map);
+							Transport.Embark(from);
                         }
                         else
                         {
@@ -950,24 +945,28 @@ namespace Server.Items
                             from.SendMessage("Welcome aboard, you are now a passenger!");
                             base.OnDoubleClick(from);
                             from.MoveToWorld(this.Location, this.Map);
+							Transport.Embark(from);
                         }
                         else if (m_Boat.Party == 2)
                         {
                             from.SendMessage("Welcome aboard, you are now a crew!");
                             base.OnDoubleClick(from);
                             from.MoveToWorld(this.Location, this.Map);
+							Transport.Embark(from);
                         }
                         else if (m_Boat.Party == 3)
                         {
                             from.SendMessage("Welcome aboard, you are now an officer!");
                             base.OnDoubleClick(from);
                             from.MoveToWorld(this.Location, this.Map);
+							Transport.Embark(from);
                         }
                         else if (m_Boat.Party == 4)
                         {
                             from.SendMessage("Welcome aboard, you are now a captain!");
                             base.OnDoubleClick(from);
                             from.MoveToWorld(this.Location, this.Map);
+							Transport.Embark(from);
                         }
                         else
                         {
@@ -980,24 +979,28 @@ namespace Server.Items
                         from.SendMessage("Welcome aboard, you are now a passenger!");
                         base.OnDoubleClick(from);
                         from.MoveToWorld(this.Location, this.Map);
+						Transport.Embark(from);
                     }
                     else if (m_Boat.Public == 2)
                     {
                         from.SendMessage("Welcome aboard, you are now a crew!");
                         base.OnDoubleClick(from);
                         from.MoveToWorld(this.Location, this.Map);
+						Transport.Embark(from);
                     }
                     else if (m_Boat.Public == 3)
                     {
                         from.SendMessage("Welcome aboard, you are now an officer!");
                         base.OnDoubleClick(from);
                         from.MoveToWorld(this.Location, this.Map);
+						Transport.Embark(from);
                     }
                     else if (m_Boat.Public == 4)
                     {
                         from.SendMessage("Welcome aboard, you are now a captain!");
                         base.OnDoubleClick(from);
                         from.MoveToWorld(this.Location, this.Map);
+						Transport.Embark(from);
                     }
                     else
                     {
@@ -1012,24 +1015,28 @@ namespace Server.Items
                         from.SendMessage("Welcome aboard, you are now a passenger!");
                         base.OnDoubleClick(from);
                         from.MoveToWorld(this.Location, this.Map);
+						Transport.Embark(from);
                     }
                     else if (m_Boat.Guild == 2)
                     {
                         from.SendMessage("Welcome aboard, you are now a crew!");
                         base.OnDoubleClick(from);
                         from.MoveToWorld(this.Location, this.Map);
+						Transport.Embark(from);
                     }
                     else if (m_Boat.Guild == 3)
                     {
                         from.SendMessage("Welcome aboard, you are now an officer!");
                         base.OnDoubleClick(from);
                         from.MoveToWorld(this.Location, this.Map);
+						Transport.Embark(from);
                     }
                     else if (m_Boat.Guild == 4)
                     {
                         from.SendMessage("Welcome aboard, you are now a captain!");
                         base.OnDoubleClick(from);
                         from.MoveToWorld(this.Location, this.Map);
+						Transport.Embark(from);
                     }
                     else
                     {
@@ -1044,24 +1051,28 @@ namespace Server.Items
                         from.SendMessage("Welcome aboard, you are now a passenger!");
                         base.OnDoubleClick(from);
                         from.MoveToWorld(this.Location, this.Map);
+						Transport.Embark(from);
                     }
                     else if (m_Boat.Party == 2)
                     {
                         from.SendMessage("Welcome aboard, you are now a crew!");
                         base.OnDoubleClick(from);
                         from.MoveToWorld(this.Location, this.Map);
+						Transport.Embark(from);
                     }
                     else if (m_Boat.Party == 3)
                     {
                         from.SendMessage("Welcome aboard, you are now an officer!");
                         base.OnDoubleClick(from);
                         from.MoveToWorld(this.Location, this.Map);
+						Transport.Embark(from);
                     }
                     else if (m_Boat.Party == 4)
                     {
                         from.SendMessage("Welcome aboard, you are now a captain!");
                         base.OnDoubleClick(from);
                         from.MoveToWorld(this.Location, this.Map);
+						Transport.Embark(from);
                     }
                     else
                     {
@@ -1074,24 +1085,28 @@ namespace Server.Items
                     from.SendMessage("Welcome aboard, you are now a passenger!");
                     base.OnDoubleClick(from);
                     from.MoveToWorld(this.Location, this.Map);
+					Transport.Embark(from);
                 }
                 else if (m_Boat.Public == 2)
                 {
                     from.SendMessage("Welcome aboard, you are now a crew!");
                     base.OnDoubleClick(from);
                     from.MoveToWorld(this.Location, this.Map);
+					Transport.Embark(from);
                 }
                 else if (m_Boat.Public == 3)
                 {
                     from.SendMessage("Welcome aboard, you are now an officer!");
                     base.OnDoubleClick(from);
                     from.MoveToWorld(this.Location, this.Map);
+					Transport.Embark(from);
                 }
                 else if (m_Boat.Public == 4)
                 {
                     from.SendMessage("Welcome aboard, you are now a captain!");
                     base.OnDoubleClick(from);
                     from.MoveToWorld(this.Location, this.Map);
+					Transport.Embark(from);
                 }
                 else
                 {
@@ -1147,6 +1162,7 @@ namespace Server.Items
                                 return;
 
                             from.Location = new Point3D(x, y, z);
+							Transport.Disembark(from);
                             return;
                         }
                     }
@@ -1159,6 +1175,7 @@ namespace Server.Items
                             return;
 
                         from.Location = new Point3D(x, y, z);
+						Transport.Disembark(from);
                         return;
                     }
                 }

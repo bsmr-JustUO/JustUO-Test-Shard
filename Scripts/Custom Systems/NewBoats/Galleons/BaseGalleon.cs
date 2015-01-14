@@ -42,6 +42,9 @@ namespace Server.Multis
 		[CommandProperty(AccessLevel.GameMaster)]
         public DateTime TimeOfRepair { get { return m_RepairTime; } set { m_RepairTime = value; if (TillerManMobile != null) TillerManMobile.InvalidateProperties(); } }
 		
+		[CommandProperty(AccessLevel.GameMaster)]
+		public virtual BaseDockedGalleon DockedGalleon { get { return null; } }
+		
         public int CurrentItemIdModifier { get { return m_CurrentItemIdModifier; } }
 		
 		public int CannonItemIdModifier { get { return m_CannonItemIdModifier; } }
@@ -49,10 +52,8 @@ namespace Server.Multis
 		public int CannonItemIdModifierSx { get { return m_CannonItemIdModifierSx; } }
 		
 		public int CannonItemIdModifierDx { get { return m_CannonItemIdModifierDx; } }	
-		
-		
-		[CommandProperty(AccessLevel.GameMaster)]
-		public virtual BaseDockedGalleon DockedGalleon { get { return null; } }
+				
+
         #endregion
 		
         protected BaseGalleon(int northMultiID)

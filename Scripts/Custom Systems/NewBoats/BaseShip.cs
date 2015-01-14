@@ -266,17 +266,29 @@ namespace Server.Multis
             if (IsOnBoard(from))
             {
 				if (from.Mounted)
+				{
 					return;
+				}
 					
 				if (this.Owner != null && this.Owner != from)
+				{
 					if (this.PlayerAccess != null && this.PlayerAccess.ContainsKey((PlayerMobile)from) && (this.PlayerAccess[(PlayerMobile)from] < 2))
+					{
 						return;
-					else if(this.Guild != null && from.Guild == this.Owner.Guild && this.Guild < 2)  
+					}
+					else if(this.Guild != null && from.Guild == this.Owner.Guild && this.Guild < 2) 
+					{
 						return;
+					}
 					else if(this.Party != null && from.Party == this.Owner.Party && this.Party < 2)
+					{
 						return;
+					}
 					else if(this.Public != null && this.Public < 2)
+					{
 						return;
+					}
+				}
 				
                 for (int i = 0; i < e.Keywords.Length; ++i)
                 {
@@ -362,7 +374,7 @@ namespace Server.Multis
             return (Direction)((int)Facing + (int)cmd) & Direction.Mask;
         }
 		
-		public uint CreateKeys( Mobile m )
+		public virtual uint CreateKeys( Mobile m )
 		{
 			uint value = Key.RandomValue();
 

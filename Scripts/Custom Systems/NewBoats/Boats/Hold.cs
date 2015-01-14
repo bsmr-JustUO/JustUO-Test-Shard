@@ -89,58 +89,8 @@ namespace Server.Items
             }
             else
             {
-                if (from == m_Boat.Owner)
-                {
-                    base.OnDoubleClick(from);
-                }
-                else if (m_Boat.PlayerAccess != null)
-                {
-                    if (m_Boat.PlayerAccess.ContainsKey((PlayerMobile)from))
-                    {
-                        if (m_Boat.PlayerAccess[(PlayerMobile)from] == 3)
-                        {
-                            base.OnDoubleClick(from);
-                        }
-                        else if (m_Boat.PlayerAccess[(PlayerMobile)from] == 4)
-                        {
-                            base.OnDoubleClick(from);
-                        }
-                        else if ((from.Guild == m_Boat.Owner.Guild) && (from.Guild != null))
-                        {
-                            if (m_Boat.Guild == 3)
-                            {
-                                base.OnDoubleClick(from);
-                            }
-                            else if (m_Boat.Guild == 4)
-                            {
-                                base.OnDoubleClick(from);
-                            }
-                            else if ((from.Party == m_Boat.Owner.Party) && (from.Party != null))
-                            {
-                                if (m_Boat.Party == 3)
-                                {
-                                    base.OnDoubleClick(from);
-                                }
-                                else if (m_Boat.Party == 4)
-                                {
-                                    base.OnDoubleClick(from);
-                                }
-                                else
-                                {
-                                    if (m_Boat.Public == 3)
-                                    {
-                                        base.OnDoubleClick(from);
-                                    }
-                                    else if (m_Boat.Public == 4)
-                                    {
-                                        base.OnDoubleClick(from);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+                base.OnDoubleClick(from);               
+			}
         }
        
         public override void Serialize(GenericWriter writer)

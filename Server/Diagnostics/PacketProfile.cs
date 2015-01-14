@@ -70,7 +70,7 @@ namespace Server.Diagnostics
 
 		private long _created;
 		
-		//Smooth Move START
+		#region SmoothMove
 		public long Created {
 			get {
 				return _created;
@@ -79,7 +79,7 @@ namespace Server.Diagnostics
 				_created = value;
 			}
 		}
-		//Smooth Move END		
+		#endregion		
 
 		public void Increment()
 		{

@@ -56,119 +56,19 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (!Transport.IsDriven)
-           {
-                if (m_Boat != null)
-                {
-                    if (from.InRange(this.Location, 2))
-                    {
-                        if (!from.Mounted)
-                        {
-                            if (from == m_Boat.Owner)
-                            {
-                                from.SendMessage("You take control of the ship");
-                                Transport.TakeCommand(from);
-                            }
-                            else if (m_Boat.PlayerAccess != null)
-                            {
-                                if (m_Boat.PlayerAccess.ContainsKey((PlayerMobile)from))
-                                {
-                                    if (m_Boat.PlayerAccess[(PlayerMobile)from] == 2)
-                                    {
-                                        from.SendMessage("You take control of the ship");
-                                        Transport.TakeCommand(from);
-                                    }
-                                    else if (m_Boat.PlayerAccess[(PlayerMobile)from] == 3)
-                                    {
-                                        from.SendMessage("You take control of the ship");
-                                        Transport.TakeCommand(from);
-                                    }
-                                    else if (m_Boat.PlayerAccess[(PlayerMobile)from] == 4)
-                                    {
-                                        from.SendMessage("You take control of the ship");
-                                        Transport.TakeCommand(from);
-                                    }
-                                    else if ((from.Guild == m_Boat.Owner.Guild) && (from.Guild != null))
-                                    {
-                                        if (m_Boat.Guild == 2)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Boat.Guild == 3)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Boat.Guild == 4)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                    }
-                                    else if ((from.Party == m_Boat.Owner.Party) && (from.Party != null))
-                                    {
-                                        if (m_Boat.Party == 2)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Boat.Party == 3)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Boat.Party == 4)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (m_Boat.Public == 2)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Boat.Public == 3)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                        else if (m_Boat.Public == 4)
-                                        {
-                                            from.SendMessage("You take control of the ship");
-                                            Transport.TakeCommand(from);
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    from.SendMessage("You are not allowed to do that");
-                                }
-                            }
-                            else
-                            {
-                                from.SendMessage("You are not allowed to do that");
-                            }
-                        }
-                        else
-                        {
-                            from.SendMessage("You can not control the ship while mounted");
-                        }
-                    }
-                    else
-                    {
-                        from.SendMessage("You are to far away from the tiller");
-                    }
-                }
-            }
-            else
-            {
-                Transport.LeaveCommand(from);
-                from.SendMessage("You step away from the tiller");
-            }
+			if (m_Boat != null && m_Boat.Contains(from))
+			{
+				if (!Transport.IsDriven)
+				{
+					from.SendMessage("You are now piloting this vessel");
+					Transport.TakeCommand(from);
+				}    
+				else
+				{
+					Transport.LeaveCommand(from);
+					from.SendMessage("You are no longer piloting this vessel");
+				}
+			}
         }
 
         public void SetFacing(Direction oldFacing, Direction newFacing)
@@ -227,44 +127,15 @@ namespace Server.Items
         public override void GetContextMenuEntries(Mobile from, List<ContextMenuEntry> list)
         {
 			base.GetContextMenuEntries(from, list);
-            list.Add(new SecuritySettingsEntry(from, (NewBaseBoat)this.Transport));
-			list.Add(new RenameEntry(from, (NewBaseBoat)this.Transport));
-        }		
-		
-		private class SecuritySettingsEntry : ContextMenuEntry
-		{			
-			private readonly Mobile m_from;
-			private NewBaseBoat m_Boat;
-			
-			public SecuritySettingsEntry(Mobile from, NewBaseBoat boat)
-				: base(1116567)
-			{				
-				m_from = from;
-				m_Boat = boat;
-			}
-
-			public override void OnClick()
+			if (m_Boat != null && !m_Boat.Contains(from))
 			{
-				if (m_from != null)
-				{
-				
-					Dictionary<int, PlayerMobile> PlayersAboard = new Dictionary<int,PlayerMobile>();
-					IPooledEnumerable eable = m_from.Map.GetClientsInRange(m_from.Location, m_Boat.GetMaxUpdateRange());
-					int i = 0;
-					foreach (NetState state in eable)
-					{
-						Mobile m = state.Mobile;
-
-						if (m is PlayerMobile)						
-							if (m_Boat.IsOnBoard(m))											
-								PlayersAboard.Add(i++,(PlayerMobile)m);																            
-					}
-					eable.Free();					
-				
-					m_from.SendGump(new SecuritySettingsGump(SecuritySettingsGumpPage.Default, m_from, (BaseShip)m_Boat, PlayersAboard, 1, null));
-				}
+				list.Add(new DryDockEntry(from, (NewBaseBoat)this.Transport));
 			}
-		}
+			else
+			{
+				list.Add(new RenameEntry(from, (NewBaseBoat)this.Transport));
+			}
+        }		
 
 		private class RenameEntry : ContextMenuEntry
 		{			
@@ -283,6 +154,25 @@ namespace Server.Items
 				if ((m_from != null) && (m_Boat != null))
 					m_Boat.BeginRename(m_from);			
 			}
-		}				
+		}	
+		
+		private class DryDockEntry : ContextMenuEntry
+		{			
+			private readonly Mobile m_From;
+			private NewBaseBoat m_Boat;
+			
+			public DryDockEntry(Mobile from, NewBaseBoat boat)
+				: base(1116520)
+			{				
+				m_From = from;
+				m_Boat = boat;
+			}
+
+			public override void OnClick()
+			{
+				if ((m_From != null) && (m_Boat != null))
+					m_Boat.BeginDryDock(m_From);			
+			}
+		}			
     }
 }

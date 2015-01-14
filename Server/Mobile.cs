@@ -5825,6 +5825,7 @@ namespace Server
 
 			switch (version)
 			{
+				#region SmoothMove
                 case 34:
                     {
                         m_Transport = reader.ReadItem() as BaseSmoothMulti;
@@ -5832,7 +5833,8 @@ namespace Server
                             m_Transport = null;
 
                         goto case 33;
-                    }			
+                    }		
+				#endregion
 				case 33:
 					{
 						m_SpecialSlayerMechanics = reader.ReadBool();
@@ -6315,9 +6317,11 @@ namespace Server
 
 		public virtual void Serialize(GenericWriter writer)
 		{
+			#region SmoothMove
 			writer.Write(34); // version
 
 			writer.Write((Item)m_Transport);
+			#endregion
 
 			writer.Write(m_SpecialSlayerMechanics);
 
@@ -9803,7 +9807,7 @@ namespace Server
 
 				if (m_Map != null)
 				{
-					m_Map.OnMove(oldLocation, this);
+					m_Map.OnMove(oldLocation, this, isTeleport); //SmoothMove : CheckMulti depends on isTeleport
 				}
 
 				if (isTeleport && m_NetState != null && (!m_NetState.HighSeas || !m_NoMoveHS))

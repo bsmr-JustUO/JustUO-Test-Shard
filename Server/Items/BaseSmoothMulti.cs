@@ -443,7 +443,7 @@ namespace Server.Items
                 }
             }
 
-            // controllo items ( da aggiungere controllo ponti se previsti )
+            
             IPooledEnumerable eable = map.GetItemsInBounds(new Rectangle2D(loc.X + newComponents.Min.X, loc.Y + newComponents.Min.Y, newComponents.Width, newComponents.Height));
 
             foreach (Item item in eable)

@@ -1735,14 +1735,14 @@ namespace Server
 		/// <summary>
 		///     Moves the Item to a given <paramref name="location" /> and <paramref name="map" />.
 		/// </summary>
-		//Smooth Move START
+		#region SmoothMove
 		public void MoveToWorld(Point3D location, Map map)
         {
             MoveToWorld(location, map, true);
         }		
 		
 		public void MoveToWorld(Point3D location, Map map, bool checkMultis)
-		//Smooth Move END
+		#endregion
 		{
 			if (Deleted)
 			{
@@ -1879,7 +1879,7 @@ namespace Server
 
 				eable.Free();
 
-				m_Map.OnMove(oldInternalLocation, this);
+				m_Map.OnMove(oldInternalLocation, this, true); //SmoothMove : CheckMulti = true
 
 				RemDelta(ItemDelta.Update);
 			}
@@ -2440,11 +2440,11 @@ namespace Server
 
 		public virtual void Serialize(GenericWriter writer)
 		{
-			//Smooth Move START
-			writer.Write(10); // version
+			#region SmoothMove
+			writer.Write(10); // version 10 : SmoothMove
 
 			writer.Write((Item)m_Transport);
-			//Smooth Move END
+			#endregion
 
 			var flags = SaveFlag.None;
 
@@ -2901,13 +2901,13 @@ namespace Server
 
 			switch (version)
 			{
-				//Smooth Move START
+				#region SmoothMove
                 case 10:
                     {
                         m_Transport = reader.ReadItem() as BaseSmoothMulti;
                         goto case 9;
                     }
-				//Smooth Move END			
+				#endregion			
 				case 9:
 				case 8:
 				case 7:
@@ -4478,7 +4478,7 @@ namespace Server
 
 						if (m_Parent == null)
 						{
-							m_Map.OnMove(oldLocation, this);
+							m_Map.OnMove(oldLocation, this, true); //SmoothMove CheckMulti = true
 						}
 					}
 					else
@@ -5760,7 +5760,7 @@ namespace Server
 		public virtual void OnSectorDeactivate()
 		{ }
 
-		#region SmoothMulti
+		#region SmoothMove
 		public virtual void SetLocationOnSmooth(Point3D newLocation)
 		{
 			Point3D oldLocation = m_Location;

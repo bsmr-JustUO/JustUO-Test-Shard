@@ -5286,7 +5286,7 @@ m_Stream.Write( (int) renderMode );
 		}
 	}
 	
-	//Smooth Move START
+	#region SmoothMove
     public sealed class SmoothMovement : Packet
     {
         public SmoothMovement(BaseSmoothMulti multi, DynamicComponentList objectsToMove)
@@ -5330,11 +5330,11 @@ m_Stream.Write( (int) renderMode );
             EnsureCapacity(5 + objectsOnBoard.Count * 26);
 
             m_Stream.Write((short)objectsOnBoard.Count);
-            new WorldItemHS(multi, m_Stream);   // aggiungo pacchetto F3 per il multi
+            new WorldItemHS(multi, m_Stream); 
             objectsOnBoard.ForEachObject(
                 item => new WorldItemHS(item, m_Stream), 
                 mob => new WorldItemHS(mob, m_Stream));
         }
     }
-	//Smooth Move END	
+	#endregion	
 }

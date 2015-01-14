@@ -171,9 +171,9 @@ namespace Server.Network
 
 			RegisterEncoded(0x32, true, QuestGumpRequest);
 			
-			//Smooth Move START
+			#region SmoothMove
 			RegisterExtended( 0x33,  true, MultiMouseMovementRequest);
-			//Smooth Move END
+			#endregion
 		}
 
 		public static void Register(int packetID, int length, bool ingame, OnPacketReceive onReceive)
@@ -2977,7 +2977,7 @@ namespace Server.Network
 			state.Dispose();
 		}
 		
-		//Smooth Move START
+		#region SmoothMove
         public static void MultiMouseMovementRequest(NetState state, PacketReader reader)
         {
             Serial playerSerial = reader.ReadInt32();
@@ -2996,6 +2996,6 @@ namespace Server.Network
             BaseSmoothMulti smooth = (BaseSmoothMulti)multi;
             smooth.OnMousePilotCommand(mob, movement, speed);
         }
-		//Smooth Move END		
+		#endregion		
 	}
 }

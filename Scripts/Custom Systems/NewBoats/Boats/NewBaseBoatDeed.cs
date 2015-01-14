@@ -12,12 +12,16 @@ namespace Server.Items
 	{
 		private int m_MultiID;
 		private Point3D m_Offset;
+		private Direction m_ChosenDirection;
+		private bool m_IsGoodMultiID;
 
 		[CommandProperty( AccessLevel.GameMaster )]
 		public int MultiID{ get{ return m_MultiID; } set{ m_MultiID = value; } }
 
 		[CommandProperty( AccessLevel.GameMaster )]
 		public Point3D Offset{ get{ return m_Offset; } set{ m_Offset = value; } }
+		
+		public abstract NewBaseBoat Boat{ get; }
 
 		public NewBaseBoatDeed( int id, Point3D offset ) : base( 0x14F2 )
 		{
@@ -29,6 +33,8 @@ namespace Server.Items
       		Hue = 2401;
 			m_MultiID = id;
 			m_Offset = offset;
+			m_IsGoodMultiID = false;
+			m_ChosenDirection = Direction.North;
 		}
 
 		public NewBaseBoatDeed( Serial serial ) : base( serial )
@@ -68,6 +74,49 @@ namespace Server.Items
 
 		public override void OnDoubleClick( Mobile from )
 		{
+			from.SendGump( new BoatPlacementGump( from, this, null ) );
+		}
+		
+		public void PlacementDirection( Mobile from, Direction chosenDirection)
+		{
+			m_ChosenDirection = chosenDirection;
+		
+			if ( m_IsGoodMultiID == false )
+			{	
+				switch ( chosenDirection )
+				{		
+
+						case Direction.West:
+						{
+							m_MultiID += 3;	
+							m_IsGoodMultiID = true;
+
+							break;
+						}	
+
+						case Direction.South:
+						{
+							m_MultiID += 2;	
+							m_IsGoodMultiID = true;
+
+							break;					
+						}
+
+						case Direction.East:
+						{
+							m_MultiID += 1;
+							m_IsGoodMultiID = true;
+							
+							break;
+						}							
+				}
+			}
+			
+			ShipPlacement(from);
+		}
+		
+		public void ShipPlacement( Mobile from )
+		{
 			if ( !IsChildOf( from.Backpack ) )
 			{
 				from.SendLocalizedMessage( 1042001 ); // That must be in your pack for you to use it.
@@ -84,10 +133,10 @@ namespace Server.Items
 					from.LocalOverheadMessage( MessageType.Regular, 0x3B2, 502482 ); // Where do you wish to place the ship?
 
 				from.Target = new InternalTarget( this );
-			}
+			}	
 		}
 
-		public abstract NewBaseBoat Boat{ get; }
+		
 
 		public void OnPlacement( Mobile from, Point3D p )
 		{
@@ -131,7 +180,7 @@ namespace Server.Items
 
 					boat.Owner = from;
 					boat.Anchored = false;
-
+					
 					uint keyValue = boat.CreateKeys( from );
 
 					if ( boat.PPlank != null )
@@ -140,6 +189,8 @@ namespace Server.Items
 						boat.SPlank.KeyValue = keyValue;
 
 					boat.MoveToWorld( p, map );
+					
+					boat.SetFacing(m_ChosenDirection);
 				}
 				else
 				{

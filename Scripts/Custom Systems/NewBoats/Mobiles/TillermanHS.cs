@@ -170,10 +170,21 @@ namespace Server.Mobiles
         public override void GetContextMenuEntries(Mobile from, List<ContextMenuEntry> list)
         {
 			base.GetContextMenuEntries(from, list);
-            list.Add(new SecuritySettingsEntry(from, (BaseGalleon)this.Transport));
-			list.Add(new RenameEntry(from, (BaseGalleon)this.Transport));
+			
+			if (m_Galleon != null && !m_Galleon.Contains(from))
+			{			
+				list.Add(new DryDockEntry(from, (BaseGalleon)this.Transport));
+			}
+			else
+			{
+				list.Add(new SecuritySettingsEntry(from, (BaseGalleon)this.Transport));
+				list.Add(new RenameEntry(from, (BaseGalleon)this.Transport));			
+			}
+			
 			if (m_Galleon.Durability < 33)
+			{
 				list.Add(new EmergencyRepairsEntry(from, (BaseGalleon)this.Transport));
+			}
         }		
 		
 
@@ -276,6 +287,25 @@ namespace Server.Mobiles
 			{
 				if ((m_from != null) && (m_Galleon != null))
 					m_Galleon.EmergencyRepairs();			
+			}
+		}	
+
+		private class DryDockEntry : ContextMenuEntry
+		{			
+			private readonly Mobile m_From;
+			private BaseGalleon m_Galleon;
+			
+			public DryDockEntry(Mobile from, BaseGalleon boat)
+				: base(1116520)
+			{				
+				m_From = from;
+				m_Galleon = boat;
+			}
+
+			public override void OnClick()
+			{
+				if ((m_From != null) && (m_Galleon != null))
+					m_Galleon.BeginDryDock(m_From);			
 			}
 		}		
     }
